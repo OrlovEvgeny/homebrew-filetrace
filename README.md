@@ -25,7 +25,7 @@ The formulae install the archives of a release:
 
 | Platform | Notes |
 |---|---|
-| macOS 15 or later, Apple silicon and Intel | macOS has no collection backend: the command reads an agent that runs on Linux. |
+| macOS 15 or later, Apple silicon and Intel | macOS has no collection backend yet: the command reports diagnostics there, and collection needs Linux. |
 | Linux, x86-64 and arm64 | Static binaries. The agent needs root and is not registered as a service; the [deb, rpm and apk packages](https://github.com/OrlovEvgeny/filetrace#install) install one that starts at boot. |
 
 ## Versions and lines
