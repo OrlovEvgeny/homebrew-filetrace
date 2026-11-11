@@ -1,0 +1,87 @@
+name: Formulae
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: formulae-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  HOMEBREW_NO_ANALYTICS: "1"
+  HOMEBREW_NO_AUTO_UPDATE: "1"
+  HOMEBREW_NO_ENV_HINTS: "1"
+  HOMEBREW_NO_INSTALL_CLEANUP: "1"
+
+jobs:
+  check:
+    name: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Choose the formulae
+        id: formulae
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          # A push that opens the branch, or a manual run, checks every formula.
+          if [ -n "$BASE" ] && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+              files=$(git diff --name-only --diff-filter=AMR "$BASE" HEAD -- 'Formula/*.rb')
+          else
+              files=$(git ls-files 'Formula/*.rb')
+          fi
+          names=$(printf '%s\n' "$files" | sed -n 's|^Formula/\(.*\)\.rb$|orlovevgeny/filetrace/\1|p' | tr '\n' ' ')
+          echo "names=$names" >>"$GITHUB_OUTPUT"
+          echo "formulae: ${names:-none}"
+
+      - name: Tap the checkout
+        if: steps.formulae.outputs.names != ''
+        run: |
+          if ! command -v brew >/dev/null; then
+              eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+              dirname "$(command -v brew)" >>"$GITHUB_PATH"
+          fi
+          brew update --quiet
+          tap="$(brew --repository)/Library/Taps/orlovevgeny/homebrew-filetrace"
+          mkdir -p "$(dirname "$tap")"
+          ln -s "$GITHUB_WORKSPACE" "$tap"
+          brew trust --tap orlovevgeny/filetrace
+
+      - name: Style
+        if: steps.formulae.outputs.names != ''
+        run: brew style orlovevgeny/filetrace
+
+      - name: Audit
+        if: steps.formulae.outputs.names != ''
+        env:
+          NAMES: ${{ steps.formulae.outputs.names }}
+        run: |
+          # shellcheck disable=SC2086 # one name per word
+          brew audit --strict --online --formula $NAMES
+
+      - name: Install and test
+        if: steps.formulae.outputs.names != ''
+        env:
+          NAMES: ${{ steps.formulae.outputs.names }}
+        run: |
+          for name in $NAMES; do
+              brew install --formula "$name"
+              brew test "$name"
+              brew uninstall --formula "$name"
+          done
