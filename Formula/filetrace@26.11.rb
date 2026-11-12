@@ -1,7 +1,7 @@
 class FiletraceAT2611 < Formula
   desc "See which files a machine sends over the network, and where they go"
   homepage "https://github.com/OrlovEvgeny/filetrace"
-  version "26.11.7.4"
+  version "26.11.8.191"
   license "MIT"
 
   keg_only :versioned_formula
@@ -10,23 +10,23 @@ class FiletraceAT2611 < Formula
     depends_on macos: :sequoia
 
     on_arm do
-      url "https://filetrace.eorlov.org/dist/v26.11.7.4-stable/filetrace-26.11.7.4-darwin-arm64.tar.gz"
-      sha256 "4be9ad23204bcc87d98c31b5f112cdcca87f8cce1ee0fa8f52e8d79c08a76a07"
+      url "https://filetrace.eorlov.org/dist/v26.11.8.191-stable/filetrace-26.11.8.191-darwin-arm64.tar.gz"
+      sha256 "54d84ff24e6d86836142b509811ce3b690566d76164c3a54eafcf5e75158c251"
     end
     on_intel do
-      url "https://filetrace.eorlov.org/dist/v26.11.7.4-stable/filetrace-26.11.7.4-darwin-amd64.tar.gz"
-      sha256 "11c625da9873cc57b96bcf6ad08981a3c62c19d2d1fc674e1816c5c7f52f1a33"
+      url "https://filetrace.eorlov.org/dist/v26.11.8.191-stable/filetrace-26.11.8.191-darwin-amd64.tar.gz"
+      sha256 "f8da412ef0f09061c1731d6e4d93f5c8ff2c37389fade97ba0e29288f31c7126"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://filetrace.eorlov.org/dist/v26.11.7.4-stable/filetrace-26.11.7.4-linux-arm64.tar.gz"
-      sha256 "76e100280fa761b0cc417f6c53dd1be246cc86c4bbdc38d084c92503c1c50d56"
+      url "https://filetrace.eorlov.org/dist/v26.11.8.191-stable/filetrace-26.11.8.191-linux-arm64.tar.gz"
+      sha256 "b201458d27b67e97e6b25d55f85490b68e9bef6ad1ffa8f33798262e63bb904c"
     end
     on_intel do
-      url "https://filetrace.eorlov.org/dist/v26.11.7.4-stable/filetrace-26.11.7.4-linux-amd64.tar.gz"
-      sha256 "c89483ae5156fc69663042c164db3c98917cd81a752665b79765fd63b0a8ccf3"
+      url "https://filetrace.eorlov.org/dist/v26.11.8.191-stable/filetrace-26.11.8.191-linux-amd64.tar.gz"
+      sha256 "460ed3f661d6f3b92f48323f6c71ef0e637d0728d018cb84579d97406146fd5b"
     end
   end
 
